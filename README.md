@@ -8,6 +8,8 @@ FocusDock is a menu bar app. When a Focus turns on, it swaps your Dock apps, Doc
 
 ![The FocusDock menu bar panel: the active Work profile, and the list of profiles](docs/menu-bar.jpg)
 
+<p align="center"><a href="docs/demo.mp4"><img src="docs/demo-poster.jpg" width="720" alt="Watch the 25-second demo video"></a><br><a href="docs/demo.mp4">▶ Watch the 25-second demo</a></p>
+
 ## Features
 
 - **A Dock per Focus.** Each profile holds its own Dock apps and folders, in your order. Start from what's in your Dock right now and tick only the ones you want.
