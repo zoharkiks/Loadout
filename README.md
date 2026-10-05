@@ -6,7 +6,7 @@
 
 FocusDock is a menu bar app. When a Focus turns on, it swaps your Dock apps, Dock folders and wallpaper for the ones you picked for that Focus. When the Focus ends, your usual setup comes back.
 
-![The five onboarding screens, in light and dark mode](docs/onboarding.jpg)
+![The FocusDock menu bar panel: the active Work profile, and the list of profiles](docs/menu-bar.jpg)
 
 ## Features
 
@@ -15,6 +15,17 @@ FocusDock is a menu bar app. When a Focus turns on, it swaps your Dock apps, Doc
 - **Three ways to switch.** A Focus Filter in System Settings, by hand from the menu bar, or the **Apply FocusDock Profile** action in Shortcuts.
 - **Make it yours.** Give each profile a colour and an icon. The menu bar panel and editor take on its tint.
 - **Private.** No account, no analytics, no network access. Everything stays on your Mac.
+
+<table>
+  <tr>
+    <td><img src="docs/editor.jpg" alt="Profile editor: name, colour and icon"></td>
+    <td><img src="docs/editor-dock.jpg" alt="Profile editor: Dock apps, folders and wallpaper"></td>
+  </tr>
+  <tr>
+    <td align="center">Give each profile a colour and an icon</td>
+    <td align="center">Pick its Dock apps, folders and wallpaper</td>
+  </tr>
+</table>
 
 ## Requirements
 
@@ -49,6 +60,8 @@ If you download a built `FocusDock.app` (from Releases), macOS will block it the
 ## Set up
 
 The first launch walks you through these steps.
+
+![The five welcome screens, in light and dark mode](docs/onboarding.jpg)
 
 1. Click the FocusDock icon in the menu bar, then the gear › **Edit Profiles…**, and click **New Profile** (for example "Work").
 2. Under **Dock**, use **Add from Current Dock…** or **Add Apps…** / **Add Folders…**. Drag rows to reorder them.
