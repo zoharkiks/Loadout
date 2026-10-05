@@ -4,7 +4,7 @@
 
 <p align="center"><b>A loadout for every Focus.</b><br>Give every Focus on your Mac its own Dock and its own wallpaper.</p>
 
-<p align="center"><a href="https://loadoutmac.netlify.app"><b>loadoutmac.netlify.app</b></a></p>
+<p align="center"><a href="https://loadout.zoharkiks.workers.dev"><b>loadout.zoharkiks.workers.dev</b></a></p>
 
 Loadout is a menu bar app. When a Focus turns on, it swaps your Dock apps, Dock folders and wallpaper for the ones you picked for that Focus. When the Focus ends, your usual setup comes back.
 
