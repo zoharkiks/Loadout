@@ -27,7 +27,7 @@ final class ProfileApplier: ObservableObject {
         activationSource = defaults.string(forKey: Keys.source).flatMap(ActivationSource.init(rawValue:))
     }
 
-    /// Called by the Focus filter. `nil` means the Focus that used FocusDock turned off.
+    /// Called by the Focus filter. `nil` means the Focus that used Loadout turned off.
     func focusChanged(to profileID: UUID?) {
         // Switching Focus A → B can deliver "A off" and "B on" in either order,
         // so an "off" never overrides an "on" that is still waiting to be applied.

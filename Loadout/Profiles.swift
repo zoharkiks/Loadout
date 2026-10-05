@@ -67,7 +67,7 @@ final class ProfileStore: ObservableObject {
 
     nonisolated static var fileURL: URL {
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("FocusDock", isDirectory: true)
+            .appendingPathComponent("Loadout", isDirectory: true)
             .appendingPathComponent("profiles.json")
     }
 
@@ -88,7 +88,7 @@ final class ProfileStore: ObservableObject {
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             try encoder.encode(library).write(to: Self.fileURL, options: .atomic)
         } catch {
-            NSLog("FocusDock: failed to save profiles: \(error)")
+            NSLog("Loadout: failed to save profiles: \(error)")
         }
     }
 }

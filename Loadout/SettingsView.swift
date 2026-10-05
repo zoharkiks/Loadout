@@ -250,7 +250,7 @@ struct ProfileEditor: View {
         GlassCard {
             CardHeader(symbol: "moon.fill", tint: ProfileTint.purple.color,
                        title: "Use when no Focus is on",
-                       subtitle: "Restored whenever a Focus that uses FocusDock ends.",
+                       subtitle: "Restored whenever a Focus that uses Loadout ends.",
                        isOn: Binding(
                            get: { store.library.defaultProfileID == profile.id },
                            set: { store.library.defaultProfileID = $0 ? profile.id : nil }))
@@ -734,7 +734,7 @@ struct CurrentDockPicker: View {
 // MARK: - Empty state
 
 extension Notification.Name {
-    static let newProfileRequested = Notification.Name("FocusDock.newProfileRequested")
+    static let newProfileRequested = Notification.Name("Loadout.newProfileRequested")
 }
 
 struct SetupGuide: View {
@@ -743,14 +743,14 @@ struct SetupGuide: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             IconSquare(symbol: "dock.rectangle", tint: ProfileTint.blue.color, size: 56)
-            Text("Set up FocusDock")
+            Text("Set up Loadout")
                 .font(.system(size: 28, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
             VStack(alignment: .leading, spacing: 12) {
                 step(1, "Create a profile and pick its Dock apps, folders and wallpaper.")
                 step(2, "Turn on “Use when no Focus is on” for the profile you want back when a Focus ends.")
-                step(3, "In System Settings › Focus, open a Focus, choose Add Filter › FocusDock and pick a profile.")
-                step(4, "Repeat for each Focus. FocusDock switches automatically.")
+                step(3, "In System Settings › Focus, open a Focus, choose Add Filter › Loadout and pick a profile.")
+                step(4, "Repeat for each Focus. Loadout switches automatically.")
             }
             HStack(spacing: 10) {
                 Button(action: addProfile) { Label("New Profile", systemImage: "plus") }

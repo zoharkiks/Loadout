@@ -2,7 +2,7 @@ import ServiceManagement
 import SwiftUI
 
 extension Notification.Name {
-    static let editProfileRequested = Notification.Name("FocusDock.editProfileRequested")
+    static let editProfileRequested = Notification.Name("Loadout.editProfileRequested")
 }
 
 /// The menu bar dropdown: tinted glass panel with a Now / Profiles switcher.
@@ -97,7 +97,7 @@ struct MenuPanel: View {
                 get: { SMAppService.mainApp.status == .enabled },
                 set: { on in try? on ? SMAppService.mainApp.register() : SMAppService.mainApp.unregister() }))
             Divider()
-            Button("Quit FocusDock") { NSApp.terminate(nil) }
+            Button("Quit Loadout") { NSApp.terminate(nil) }
         } label: {
             HStack(spacing: 3) {
                 Image(systemName: "gearshape.fill").font(.system(size: 15))
@@ -125,7 +125,7 @@ struct MenuPanel: View {
                 .foregroundStyle(.white.opacity(0.6))
                 .padding(.top, 10)
 
-            Text(active?.name ?? "FocusDock")
+            Text(active?.name ?? "Loadout")
                 .font(.system(size: 40, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
                 .contentTransition(.numericText())

@@ -112,8 +112,8 @@ struct OnboardingView: View {
     }
 
     static let pages: [Page] = [
-        Page(title: "Welcome to FocusDock",
-             message: "FocusDock gives every Focus mode its own Dock and wallpaper, so your Mac changes with what you're doing.",
+        Page(title: "Welcome to Loadout",
+             message: "Loadout gives every Focus mode its own Dock and wallpaper, so your Mac changes with what you're doing.",
              button: "Continue",
              palette: [.rgb(0.66, 0.89, 1.00), .rgb(0.74, 0.82, 1.00), .rgb(0.60, 0.71, 1.00),
                        .rgb(0.84, 0.94, 1.00), .rgb(0.89, 0.83, 1.00), .rgb(0.80, 0.84, 1.00)]),
@@ -128,7 +128,7 @@ struct OnboardingView: View {
              palette: [.rgb(1.00, 0.87, 0.78), .rgb(1.00, 0.82, 0.86), .rgb(0.93, 0.80, 1.00),
                        .rgb(1.00, 0.95, 0.90), .rgb(1.00, 0.91, 0.93), .rgb(0.95, 0.90, 1.00)]),
         Page(title: "Connect your Focus modes",
-             message: "In System Settings › Focus, open a Focus, choose Add Filter › FocusDock and pick a profile.",
+             message: "In System Settings › Focus, open a Focus, choose Add Filter › Loadout and pick a profile.",
              button: "Continue",
              secondaryButton: "Open Focus Settings",
              palette: [.rgb(0.70, 0.93, 0.95), .rgb(0.80, 0.95, 0.86), .rgb(0.72, 0.93, 0.72),

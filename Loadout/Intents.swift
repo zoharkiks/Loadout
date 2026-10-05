@@ -1,7 +1,7 @@
 import AppIntents
 
 struct ProfileEntity: AppEntity {
-    static var typeDisplayRepresentation: TypeDisplayRepresentation = "FocusDock Profile"
+    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Loadout Profile"
     static var defaultQuery = ProfileQuery()
 
     var id: UUID
@@ -32,10 +32,10 @@ struct ProfileQuery: EntityQuery {
 /// Shows up under System Settings › Focus › (a Focus) › Focus Filters.
 /// macOS runs it with the chosen profile when the Focus turns on,
 /// and again with no profile when it turns off.
-struct FocusDockFilter: SetFocusFilterIntent {
+struct LoadoutFilter: SetFocusFilterIntent {
     static var title: LocalizedStringResource = "Set Dock & Wallpaper"
     static var description: IntentDescription? = IntentDescription(
-        "Switches your Dock apps, Dock folders and wallpaper to a FocusDock profile while this Focus is on.")
+        "Switches your Dock apps, Dock folders and wallpaper to a Loadout profile while this Focus is on.")
 
     @Parameter(title: "Profile")
     var profile: ProfileEntity?
@@ -53,7 +53,7 @@ struct FocusDockFilter: SetFocusFilterIntent {
 
 /// Lets Shortcuts (including "When Focus turns on" automations) apply a profile directly.
 struct ApplyProfileIntent: AppIntent {
-    static var title: LocalizedStringResource = "Apply FocusDock Profile"
+    static var title: LocalizedStringResource = "Apply Loadout Profile"
 
     @Parameter(title: "Profile")
     var profile: ProfileEntity

@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct FocusDockApp: App {
+struct LoadoutApp: App {
     @StateObject private var store = ProfileStore.shared
     @StateObject private var applier = ProfileApplier.shared
 
@@ -15,7 +15,7 @@ struct FocusDockApp: App {
         }
         .menuBarExtraStyle(.window)
 
-        Window("FocusDock", id: "main") {
+        Window("Loadout", id: "main") {
             SettingsView()
                 .environmentObject(store)
                 .environmentObject(applier)
@@ -26,7 +26,7 @@ struct FocusDockApp: App {
         // macOS may launch the app in the background to run the Focus filter; don't pop a window then.
         .defaultLaunchBehavior(.suppressed)
 
-        Window("Welcome to FocusDock", id: "onboarding") {
+        Window("Welcome to Loadout", id: "onboarding") {
             OnboardingView()
                 .activatesApp()
         }
