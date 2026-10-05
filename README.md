@@ -38,9 +38,13 @@ https://github.com/user-attachments/assets/2f1369d0-5e69-404c-a2d8-19ffaa8f47e0
 
 ## Install
 
-There's no notarized download yet, so either build it yourself or allow the downloaded app in System Settings.
+### Download
 
-### Build it yourself (recommended)
+1. Download **[Loadout.dmg](https://github.com/zoharkiks/Loadout/releases/latest/download/Loadout.dmg)** from the [latest release](https://github.com/zoharkiks/Loadout/releases/latest).
+2. Open it and drag **Loadout** into **Applications**, then open Loadout.
+3. The first time, macOS says it can't verify the developer, because the app isn't notarized yet. Click **Done**, open **System Settings › Privacy & Security**, scroll down to the message about Loadout and click **Open Anyway**, then confirm with your password. After that it opens normally.
+
+### Build it yourself
 
 1. Clone this repo and open `Loadout.xcodeproj` in Xcode.
 2. Select the **Loadout** target › **Signing & Capabilities** and choose your own **Team**. A free Apple ID (Personal Team) works.
@@ -52,14 +56,6 @@ There's no notarized download yet, so either build it yourself or allow the down
    ```
 
 4. Copy `build/Release/Loadout.app` to `/Applications` and open it once so macOS registers its Focus Filter.
-
-### Use a downloaded copy
-
-If you download a built `Loadout.app` (from Releases), macOS will block it the first time because it isn't notarized:
-
-1. Move `Loadout.app` to `/Applications` and open it. macOS says it can't verify the developer. Click **Done**.
-2. Open **System Settings › Privacy & Security**, scroll down to the message about Loadout and click **Open Anyway**.
-3. Confirm with your password. After that it opens normally.
 
 ## Set up
 
