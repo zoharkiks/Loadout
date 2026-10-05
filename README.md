@@ -8,7 +8,7 @@ Loadout is a menu bar app. When a Focus turns on, it swaps your Dock apps, Dock 
 
 ![The Loadout menu bar panel: the active Work profile, and the list of profiles](docs/menu-bar.jpg)
 
-<p align="center"><a href="docs/demo.mp4"><img src="docs/demo-poster.jpg" width="720" alt="Watch the 25-second demo video"></a><br><a href="docs/demo.mp4">▶ Watch the 25-second demo</a></p>
+https://github.com/user-attachments/assets/2f1369d0-5e69-404c-a2d8-19ffaa8f47e0
 
 ## Features
 
