@@ -95,14 +95,14 @@ enum DockManager {
         return ["tile-data": data, "tile-type": "file-tile"]
     }
 
-    private static func folderTile(_ path: String) -> [String: Any] {
+    private static func folderTile(_ path: String, arrangement: Arrangement = .name, displayAs: DisplayAs = .stack, showAs: ShowAs = .automatic) -> [String: Any] {
         let data: [String: Any] = [
             "file-data": fileData(path),
             "file-label": label(path),
             "file-type": 2,
-            "arrangement": Arrangement.dateModified.rawValue,
-            "displayas": DisplayAs.stack.rawValue,
-            "showas": ShowAs.fan.rawValue,
+            "arrangement": arrangement.rawValue,
+            "displayas": displayAs.rawValue,
+            "showas": showAs.rawValue,
         ]
         return ["tile-data": data, "tile-type": "directory-tile"]
     }
