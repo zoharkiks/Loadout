@@ -100,15 +100,27 @@ enum DockManager {
             "file-data": fileData(path),
             "file-label": label(path),
             "file-type": 2,
-            "arrangement": 1, // sort by name
-            "displayas": 0,   // stack
-            "showas": 0,      // automatic
+            "arrangement": Arrangement.dateModified.rawValue,
+            "displayas": DisplayAs.stack.rawValue,
+            "showas": ShowAs.fan.rawValue,
         ]
         return ["tile-data": data, "tile-type": "directory-tile"]
     }
 
     private static func spacerTile(_ spacer: DockSpacer) -> [String: Any] {
         ["tile-data": [String: Any](), "tile-type": spacer.tileType]
+    }
+
+    private enum Arrangement: Int {
+        case name = 1, dateAdded, dateModified, dateCreated, kind
+    }
+
+    private enum DisplayAs: Int {
+        case stack = 0, folder
+    }
+
+    private enum ShowAs: Int {
+        case automatic = 0, fan, grid, list
     }
 
     private static func restartDock() {
