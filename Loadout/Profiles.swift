@@ -9,6 +9,9 @@ struct Profile: Codable, Identifiable, Hashable {
     var dockApps: [String] = []
     /// Absolute paths to folders shown as stacks on the right side of the Dock.
     var dockFolders: [String] = []
+    /// Per-folder stack settings, keyed by folder path. A folder with no entry keeps whatever the Dock has.
+    /// Optional so profiles saved before this existed still decode.
+    var folderStyles: [String: DockFolderStyle]?
     var changesWallpaper = false
     var wallpaperPath: String?
     // Optional so profiles saved before these existed still decode.
@@ -54,6 +57,47 @@ enum DockSpacer: String, CaseIterable {
     }
 
     var title: String { self == .small ? "Small Spacer" : "Spacer" }
+}
+
+/// How a folder stack looks in the Dock: the same three choices as the Dock's right-click menu.
+/// Raw values are the ones the Dock stores in `com.apple.dock`.
+struct DockFolderStyle: Codable, Hashable {
+    enum Arrangement: Int, Codable, CaseIterable {
+        case name = 1, dateAdded, dateModified, dateCreated, kind
+
+        var title: String {
+            switch self {
+            case .name: "Name"
+            case .dateAdded: "Date Added"
+            case .dateModified: "Date Modified"
+            case .dateCreated: "Date Created"
+            case .kind: "Kind"
+            }
+        }
+    }
+
+    enum DisplayAs: Int, Codable, CaseIterable {
+        case stack = 0, folder
+
+        var title: String { self == .stack ? "Stack" : "Folder" }
+    }
+
+    enum ShowAs: Int, Codable, CaseIterable {
+        case automatic = 0, fan, grid, list
+
+        var title: String {
+            switch self {
+            case .automatic: "Automatic"
+            case .fan: "Fan"
+            case .grid: "Grid"
+            case .list: "List"
+            }
+        }
+    }
+
+    var arrangement = Arrangement.name
+    var displayAs = DisplayAs.stack
+    var showAs = ShowAs.automatic
 }
 
 struct ProfileLibrary: Codable {

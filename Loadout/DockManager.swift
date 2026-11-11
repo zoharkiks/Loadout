@@ -19,17 +19,33 @@ enum DockManager {
         tiles(othersKey).filter(isFolder).compactMap(filePath(of:))
     }
 
+    /// The stack settings of each folder in the Dock right now, keyed by path.
+    static func currentFolderStyles() -> [String: DockFolderStyle] {
+        var styles: [String: DockFolderStyle] = [:]
+        for tile in tiles(othersKey) where isFolder(tile) {
+            if let path = filePath(of: tile) { styles[path] = style(of: tile) }
+        }
+        return styles
+    }
+
     /// Replaces the Dock's apps and folder stacks, then restarts the Dock.
-    /// `apps` may contain `DockSpacer` entries. Returns false (and leaves the Dock alone) when nothing would change.
+    /// `apps` may contain `DockSpacer` entries. Folders listed in `folderStyles` get those stack settings;
+    /// others keep the Dock's. Returns false (and leaves the Dock alone) when nothing would change.
     @discardableResult
-    static func setDock(apps: [String], folders: [String]) -> Bool {
+    static func setDock(apps: [String], folders: [String], folderStyles: [String: DockFolderStyle] = [:]) -> Bool {
         let oldApps = tiles(appsKey)
         let oldOthers = tiles(othersKey)
         // Spacers have no path, so compare by tile type for them.
         let wanted = apps.map { DockSpacer(entry: $0)?.tileType ?? $0 }
         let current = oldApps.compactMap { spacer(of: $0)?.tileType ?? filePath(of: $0) }
+        let oldFolders = oldOthers.filter(isFolder)
+        let stylesMatch = folderStyles.allSatisfy { path, style in
+            guard let tile = oldFolders.first(where: { filePath(of: $0) == path }) else { return true }
+            return self.style(of: tile) == style
+        }
         guard wanted != current
-                || folders != oldOthers.filter(isFolder).compactMap(filePath(of:))
+                || folders != oldFolders.compactMap(filePath(of:))
+                || !stylesMatch
         else { return false }
 
         // Reuse existing tiles where possible so the Dock keeps its per-item settings.
@@ -39,7 +55,10 @@ enum DockManager {
         let newApps = apps.map { entry in
             DockSpacer(entry: entry).map(spacerTile) ?? tile(for: entry, in: oldApps, make: appTile)
         }
-        let newOthers = folders.map { tile(for: $0, in: oldOthers, make: folderTile) }
+        let newOthers = folders.map { path in
+            let folder = tile(for: path, in: oldOthers) { folderTile($0) }
+            return folderStyles[path].map { applying($0, to: folder) } ?? folder
+        }
             + oldOthers.filter { !isFolder($0) } // keep URL tiles etc.
 
         CFPreferencesSetAppValue(appsKey, newApps as CFArray, domain)
@@ -95,32 +114,36 @@ enum DockManager {
         return ["tile-data": data, "tile-type": "file-tile"]
     }
 
-    private static func folderTile(_ path: String, arrangement: Arrangement = .name, displayAs: DisplayAs = .stack, showAs: ShowAs = .automatic) -> [String: Any] {
+    private static func folderTile(_ path: String, style: DockFolderStyle = DockFolderStyle()) -> [String: Any] {
         let data: [String: Any] = [
             "file-data": fileData(path),
             "file-label": label(path),
             "file-type": 2,
-            "arrangement": arrangement.rawValue,
-            "displayas": displayAs.rawValue,
-            "showas": showAs.rawValue,
         ]
-        return ["tile-data": data, "tile-type": "directory-tile"]
+        return applying(style, to: ["tile-data": data, "tile-type": "directory-tile"])
+    }
+
+    private static func style(of tile: [String: Any]) -> DockFolderStyle {
+        let data = tile["tile-data"] as? [String: Any] ?? [:]
+        var style = DockFolderStyle()
+        if let value = (data["arrangement"] as? Int).flatMap(DockFolderStyle.Arrangement.init) { style.arrangement = value }
+        if let value = (data["displayas"] as? Int).flatMap(DockFolderStyle.DisplayAs.init) { style.displayAs = value }
+        if let value = (data["showas"] as? Int).flatMap(DockFolderStyle.ShowAs.init) { style.showAs = value }
+        return style
+    }
+
+    private static func applying(_ style: DockFolderStyle, to tile: [String: Any]) -> [String: Any] {
+        var tile = tile
+        var data = tile["tile-data"] as? [String: Any] ?? [:]
+        data["arrangement"] = style.arrangement.rawValue
+        data["displayas"] = style.displayAs.rawValue
+        data["showas"] = style.showAs.rawValue
+        tile["tile-data"] = data
+        return tile
     }
 
     private static func spacerTile(_ spacer: DockSpacer) -> [String: Any] {
         ["tile-data": [String: Any](), "tile-type": spacer.tileType]
-    }
-
-    private enum Arrangement: Int {
-        case name = 1, dateAdded, dateModified, dateCreated, kind
-    }
-
-    private enum DisplayAs: Int {
-        case stack = 0, folder
-    }
-
-    private enum ShowAs: Int {
-        case automatic = 0, fan, grid, list
     }
 
     private static func restartDock() {
