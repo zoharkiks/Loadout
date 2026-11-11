@@ -49,7 +49,7 @@ final class ProfileApplier: ObservableObject {
     func apply(_ profile: Profile, source: ActivationSource = .manual) {
         lastError = nil
         // An empty list almost always means "not set up yet", so leave the Dock alone rather than wipe it.
-        if profile.changesDock, !(profile.dockApps.isEmpty && profile.dockFolders.isEmpty) {
+        if profile.changesDock, !(profile.dockAppPaths.isEmpty && profile.dockFolders.isEmpty) {
             DockManager.setDock(apps: profile.dockApps, folders: profile.dockFolders)
         }
         if profile.changesWallpaper, let path = profile.wallpaperPath {

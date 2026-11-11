@@ -10,17 +10,25 @@ enum DockManager {
         tiles(appsKey).compactMap(filePath(of:))
     }
 
+    /// The apps side of the Dock in order, with each spacer as a new `DockSpacer` entry.
+    static func currentAppsAndSpacers() -> [String] {
+        tiles(appsKey).compactMap { spacer(of: $0)?.makeEntry() ?? filePath(of: $0) }
+    }
+
     static func currentFolders() -> [String] {
         tiles(othersKey).filter(isFolder).compactMap(filePath(of:))
     }
 
     /// Replaces the Dock's apps and folder stacks, then restarts the Dock.
-    /// Returns false (and leaves the Dock alone) when nothing would change.
+    /// `apps` may contain `DockSpacer` entries. Returns false (and leaves the Dock alone) when nothing would change.
     @discardableResult
     static func setDock(apps: [String], folders: [String]) -> Bool {
         let oldApps = tiles(appsKey)
         let oldOthers = tiles(othersKey)
-        guard apps != oldApps.compactMap(filePath(of:))
+        // Spacers have no path, so compare by tile type for them.
+        let wanted = apps.map { DockSpacer(entry: $0)?.tileType ?? $0 }
+        let current = oldApps.compactMap { spacer(of: $0)?.tileType ?? filePath(of: $0) }
+        guard wanted != current
                 || folders != oldOthers.filter(isFolder).compactMap(filePath(of:))
         else { return false }
 
@@ -28,7 +36,9 @@ enum DockManager {
         func tile(for path: String, in old: [[String: Any]], make: (String) -> [String: Any]) -> [String: Any] {
             old.first { filePath(of: $0) == path } ?? make(path)
         }
-        let newApps = apps.map { tile(for: $0, in: oldApps, make: appTile) }
+        let newApps = apps.map { entry in
+            DockSpacer(entry: entry).map(spacerTile) ?? tile(for: entry, in: oldApps, make: appTile)
+        }
         let newOthers = folders.map { tile(for: $0, in: oldOthers, make: folderTile) }
             + oldOthers.filter { !isFolder($0) } // keep URL tiles etc.
 
@@ -48,6 +58,10 @@ enum DockManager {
 
     private static func isFolder(_ tile: [String: Any]) -> Bool {
         tile["tile-type"] as? String == "directory-tile"
+    }
+
+    private static func spacer(of tile: [String: Any]) -> DockSpacer? {
+        (tile["tile-type"] as? String).flatMap(DockSpacer.init(tileType:))
     }
 
     private static func filePath(of tile: [String: Any]) -> String? {
@@ -91,6 +105,10 @@ enum DockManager {
             "showas": 0,      // automatic
         ]
         return ["tile-data": data, "tile-type": "directory-tile"]
+    }
+
+    private static func spacerTile(_ spacer: DockSpacer) -> [String: Any] {
+        ["tile-data": [String: Any](), "tile-type": spacer.tileType]
     }
 
     private static func restartDock() {
