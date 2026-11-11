@@ -14,7 +14,7 @@ https://github.com/user-attachments/assets/2f1369d0-5e69-404c-a2d8-19ffaa8f47e0
 
 ## Features
 
-- **A Dock per Focus.** Each profile holds its own Dock apps and folders, in your order. Start from what's in your Dock right now and tick only the ones you want.
+- **A Dock per Focus.** Each profile holds its own Dock apps and folders, in your order, with spacers to split the apps into groups. Each folder keeps its own sort, display and view settings. Start from what's in your Dock right now and tick only the ones you want.
 - **App suggestions.** Click **Suggest** and Loadout looks through the apps on your Mac and picks a Dock for the profile. On Macs with Apple Intelligence it uses Apple's on-device model, so your app list never leaves your Mac; elsewhere it picks by app category.
 - **Wallpaper that follows along.** Choose an image, use your current wallpaper, or drop any image onto the profile. It's set on every display.
 - **Three ways to switch.** A Focus Filter in System Settings, by hand from the menu bar, or the **Apply Loadout Profile** action in Shortcuts.
@@ -65,7 +65,7 @@ The first launch walks you through these steps.
 ![The five welcome screens, in light and dark mode](docs/onboarding.jpg)
 
 1. Click the Loadout icon in the menu bar, then the gear › **Edit Profiles…**, and click **New Profile** (for example "Work").
-2. Under **Dock**, use **Add from Current Dock…** or **Add Apps…** / **Add Folders…**. Drag rows to reorder them.
+2. Under **Dock**, use **Add from Current Dock…** or **Add Apps…** / **Add Folders…**. Drag rows to reorder them. To add a gap between apps, click the dashed-square button next to **Add Apps…**. To change how a folder looks in the Dock, click the settings shown on its row.
 3. Under **Wallpaper**, choose an image or drop one onto the card.
 4. On the profile you want back when a Focus ends, turn on **Use when no Focus is on**.
 5. In **System Settings › Focus**, open a Focus, choose **Add Filter › Loadout**, and pick the profile.
