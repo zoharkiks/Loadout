@@ -169,6 +169,8 @@ struct ProfileEditor: View {
     @State private var showingDockPicker = false
     @State private var showingSuggestions = false
     @State private var wallpaperDropTargeted = false
+    /// Read once, so folders without saved settings can show what the Dock uses now.
+    @State private var dockFolderStyles = DockManager.currentFolderStyles()
 
     private var isActive: Bool { applier.activeProfileID == profile.id }
 
@@ -199,10 +201,21 @@ struct ProfileEditor: View {
             .frame(maxWidth: .infinity)
         }
         .scrollIndicators(.automatic)
+        .onChange(of: profile.dockFolders) { _, folders in
+            // Drop settings for folders that were removed.
+            if let styles = profile.folderStyles, styles.keys.contains(where: { !folders.contains($0) }) {
+                profile.folderStyles = styles.filter { folders.contains($0.key) }
+            }
+        }
         .sheet(isPresented: $showingDockPicker) {
             CurrentDockPicker(profile: profile) { apps, folders in
                 add(to: \.dockApps, apps)
                 add(to: \.dockFolders, folders)
+                // Keep each imported folder's Dock settings, so they come back whenever this profile does.
+                let live = DockManager.currentFolderStyles()
+                for folder in folders {
+                    if let style = live[folder] { profile.folderStyles = (profile.folderStyles ?? [:]).merging([folder: style]) { $1 } }
+                }
             }
         }
         .sheet(isPresented: $showingSuggestions) {
@@ -339,7 +352,9 @@ struct ProfileEditor: View {
                     Button("Add Folders…") { add(to: \.dockFolders, pick(types: nil)) }
                         .buttonStyle(GlassCapsuleStyle())
                 }
-                PathList(paths: $profile.dockFolders, emptyText: "No folders. They appear as stacks next to the Trash.")
+                PathList(paths: $profile.dockFolders, emptyText: "No folders. They appear as stacks next to the Trash.") { path in
+                    AnyView(FolderStyleMenu(style: folderStyle(for: path)))
+                }
             }
         }
     }
@@ -422,6 +437,14 @@ struct ProfileEditor: View {
     }
 
     // MARK: Helpers
+
+    /// A folder's saved settings, falling back to what the Dock uses now, then the Dock's defaults.
+    /// Changing any of them saves all three for that folder.
+    private func folderStyle(for path: String) -> Binding<DockFolderStyle> {
+        Binding(
+            get: { profile.folderStyles?[path] ?? dockFolderStyles[path] ?? DockFolderStyle() },
+            set: { profile.folderStyles = (profile.folderStyles ?? [:]).merging([path: $0]) { $1 } })
+    }
 
     private func add(to keyPath: WritableKeyPath<Profile, [String]>, _ paths: [String]) {
         for path in paths where !profile[keyPath: keyPath].contains(path) {
@@ -525,6 +548,8 @@ private struct CardDivider: View {
 struct PathList: View {
     @Binding var paths: [String]
     let emptyText: String
+    /// Optional control shown at the end of each row.
+    var accessory: ((String) -> AnyView)?
     @State private var dragging: String?
 
     var body: some View {
@@ -538,7 +563,7 @@ struct PathList: View {
         } else {
             VStack(spacing: 2) {
                 ForEach(paths, id: \.self) { path in
-                    PathRow(path: path) { withAnimation(.snappy) { paths.removeAll { $0 == path } } }
+                    PathRow(path: path, accessory: accessory?(path)) { withAnimation(.snappy) { paths.removeAll { $0 == path } } }
                         .opacity(dragging == path ? 0.4 : 1)
                         .onDrag {
                             dragging = path
@@ -580,6 +605,7 @@ struct DockItemIcon: View {
 
 private struct PathRow: View {
     let path: String
+    var accessory: AnyView?
     let remove: () -> Void
     @State private var hovering = false
 
@@ -598,6 +624,7 @@ private struct PathRow: View {
                     .help("Not found at \(path)")
             }
             Spacer()
+            accessory
             Button(action: remove) {
                 Image(systemName: "xmark.circle.fill")
                     .font(.system(size: 14))
@@ -614,6 +641,33 @@ private struct PathRow: View {
         }
         .contentShape(Rectangle())
         .onHover { hovering = $0 }
+    }
+}
+
+/// The Dock's right-click options for one folder: sort order, stack or folder, and view style.
+private struct FolderStyleMenu: View {
+    @Binding var style: DockFolderStyle
+
+    var body: some View {
+        Menu {
+            Picker("Sort By", selection: $style.arrangement) {
+                ForEach(DockFolderStyle.Arrangement.allCases, id: \.self) { Text($0.title).tag($0) }
+            }
+            Picker("Display As", selection: $style.displayAs) {
+                ForEach(DockFolderStyle.DisplayAs.allCases, id: \.self) { Text($0.title).tag($0) }
+            }
+            Picker("View Content As", selection: $style.showAs) {
+                ForEach(DockFolderStyle.ShowAs.allCases, id: \.self) { Text($0.title).tag($0) }
+            }
+        } label: {
+            Text("\(style.displayAs.title) · \(style.arrangement.title) · \(style.showAs.title)")
+                .font(.system(size: 11, weight: .medium))
+        }
+        .menuStyle(.button)
+        .buttonStyle(.plain)
+        .foregroundStyle(.white.opacity(0.6))
+        .fixedSize()
+        .help("How this folder looks in the Dock")
     }
 }
 
