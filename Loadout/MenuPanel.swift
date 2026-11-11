@@ -187,7 +187,7 @@ struct MenuPanel: View {
                 Spacer()
                 if profile.changesDock {
                     HStack(spacing: -5) {
-                        ForEach(profile.dockApps.prefix(4), id: \.self) { path in
+                        ForEach(profile.dockAppPaths.prefix(4), id: \.self) { path in
                             Image(nsImage: NSWorkspace.shared.icon(forFile: path))
                                 .resizable()
                                 .frame(width: 20, height: 20)

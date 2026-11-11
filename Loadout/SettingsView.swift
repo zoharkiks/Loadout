@@ -318,6 +318,20 @@ struct ProfileEditor: View {
                         .buttonStyle(GlassCapsuleStyle())
                     Button("Add Apps…") { add(to: \.dockApps, pick(types: [.application])) }
                         .buttonStyle(GlassCapsuleStyle())
+                    Menu {
+                        ForEach(DockSpacer.allCases, id: \.self) { spacer in
+                            Button("Add \(spacer.title)") {
+                                withAnimation(.snappy) { profile.dockApps.append(spacer.makeEntry()) }
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "rectangle.dashed")
+                    }
+                    .menuStyle(.button)
+                    .menuIndicator(.hidden)
+                    .buttonStyle(GlassCapsuleStyle())
+                    .fixedSize()
+                    .help("Add a gap between apps. Drag it into place.")
                 }
                 PathList(paths: $profile.dockApps, emptyText: "No apps yet, so applying leaves your Dock as it is. Add apps, or pick them from your current Dock.")
                 CardDivider()
@@ -539,6 +553,31 @@ struct PathList: View {
     }
 }
 
+/// A row's display name: the app or folder name, or the spacer's size.
+func dockItemName(_ entry: String) -> String {
+    DockSpacer(entry: entry)?.title
+        ?? FileManager.default.displayName(atPath: entry).replacingOccurrences(of: ".app", with: "")
+}
+
+/// The Finder icon for a path, or a dashed outline for a spacer.
+struct DockItemIcon: View {
+    let entry: String
+    let size: CGFloat
+
+    var body: some View {
+        if let spacer = DockSpacer(entry: entry) {
+            RoundedRectangle(cornerRadius: size * 0.22, style: .continuous)
+                .strokeBorder(.white.opacity(0.4), style: StrokeStyle(lineWidth: 1.5, dash: [3, 2.5]))
+                .frame(width: spacer == .small ? size * 0.5 : size, height: size)
+                .frame(width: size, height: size)
+        } else {
+            Image(nsImage: NSWorkspace.shared.icon(forFile: entry))
+                .resizable()
+                .frame(width: size, height: size)
+        }
+    }
+}
+
 private struct PathRow: View {
     let path: String
     let remove: () -> Void
@@ -549,13 +588,11 @@ private struct PathRow: View {
             Image(systemName: "line.3.horizontal")
                 .font(.system(size: 11, weight: .semibold))
                 .foregroundStyle(.white.opacity(hovering ? 0.5 : 0.2))
-            Image(nsImage: NSWorkspace.shared.icon(forFile: path))
-                .resizable()
-                .frame(width: 24, height: 24)
-            Text(FileManager.default.displayName(atPath: path).replacingOccurrences(of: ".app", with: ""))
+            DockItemIcon(entry: path, size: 24)
+            Text(dockItemName(path))
                 .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(.white)
-            if !FileManager.default.fileExists(atPath: path) {
+                .foregroundStyle(DockSpacer(entry: path) == nil ? .white : .white.opacity(0.6))
+            if DockSpacer(entry: path) == nil, !FileManager.default.fileExists(atPath: path) {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundStyle(.yellow)
                     .help("Not found at \(path)")
@@ -622,7 +659,7 @@ struct CurrentDockPicker: View {
     init(profile: Profile, add: @escaping (_ apps: [String], _ folders: [String]) -> Void) {
         self.profile = profile
         self.add = add
-        let saved = DockManager.currentApps()
+        let saved = DockManager.currentAppsAndSpacers()
         savedApps = saved
         folders = DockManager.currentFolders()
         // Running apps appear in the Dock too, even though they aren't saved in it.
@@ -713,10 +750,8 @@ struct CurrentDockPicker: View {
                             Image(systemName: checked ? "checkmark.circle.fill" : "circle")
                                 .font(.system(size: 17))
                                 .foregroundStyle(checked ? .white : .white.opacity(0.35))
-                            Image(nsImage: NSWorkspace.shared.icon(forFile: path))
-                                .resizable()
-                                .frame(width: 26, height: 26)
-                            Text(FileManager.default.displayName(atPath: path).replacingOccurrences(of: ".app", with: ""))
+                            DockItemIcon(entry: path, size: 26)
+                            Text(dockItemName(path))
                                 .font(.system(size: 13, weight: .medium))
                             Spacer()
                             if added {

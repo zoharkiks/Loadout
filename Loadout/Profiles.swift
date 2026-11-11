@@ -5,7 +5,7 @@ struct Profile: Codable, Identifiable, Hashable {
     var id = UUID()
     var name: String
     var changesDock = true
-    /// Absolute paths to `.app` bundles, in Dock order.
+    /// Absolute paths to `.app` bundles in Dock order, mixed with `DockSpacer` entries.
     var dockApps: [String] = []
     /// Absolute paths to folders shown as stacks on the right side of the Dock.
     var dockFolders: [String] = []
@@ -18,12 +18,42 @@ struct Profile: Codable, Identifiable, Hashable {
     var displaySymbol: String { symbol ?? "square.stack.3d.up.fill" }
     var displayTint: ProfileTint { tint ?? .blue }
 
-    var appCountText: String { Self.count(dockApps.count, "app") }
+    /// `dockApps` without the spacers.
+    var dockAppPaths: [String] { dockApps.filter { DockSpacer(entry: $0) == nil } }
+
+    var appCountText: String { Self.count(dockAppPaths.count, "app") }
     var folderCountText: String { Self.count(dockFolders.count, "folder") }
 
     private static func count(_ n: Int, _ noun: String) -> String {
         "\(n) \(noun)\(n == 1 ? "" : "s")"
     }
+}
+
+/// A gap between Dock apps. Stored in `Profile.dockApps` as `spacer:<size>:<uuid>`, so old
+/// profiles still decode and each spacer has its own id for the editor's list.
+enum DockSpacer: String, CaseIterable {
+    case normal, small
+
+    private static let prefix = "spacer:"
+
+    init?(entry: String) {
+        guard entry.hasPrefix(Self.prefix) else { return nil }
+        let size = entry.dropFirst(Self.prefix.count).prefix { $0 != ":" }
+        self.init(rawValue: String(size))
+    }
+
+    /// A new, unique entry for `Profile.dockApps`.
+    func makeEntry() -> String { "\(Self.prefix)\(rawValue):\(UUID().uuidString)" }
+
+    /// The `tile-type` the Dock uses for this spacer.
+    var tileType: String { self == .small ? "small-spacer-tile" : "spacer-tile" }
+
+    init?(tileType: String) {
+        guard let match = Self.allCases.first(where: { $0.tileType == tileType }) else { return nil }
+        self = match
+    }
+
+    var title: String { self == .small ? "Small Spacer" : "Spacer" }
 }
 
 struct ProfileLibrary: Codable {
